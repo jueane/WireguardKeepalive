@@ -80,7 +80,7 @@ while True:
         log.info(f"Waiting {down_count}")
 
         if down_count > allow_max_error_count:
-            log.info("Ping failed ", down_count, " times. Reconnecting WireGuard...")
+            log.info(f"Ping failed {down_count} times. Reconnecting WireGuard...")
             restart_wireguard()
 
         is_last_up = False
