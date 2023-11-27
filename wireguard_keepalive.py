@@ -77,7 +77,7 @@ while True:
         else:
             pass
 
-        log.info("Waiting", down_count)
+        log.info(f"Waiting {down_count}")
 
         if down_count > allow_max_error_count:
             log.info("Ping failed ", down_count, " times. Reconnecting WireGuard...")
