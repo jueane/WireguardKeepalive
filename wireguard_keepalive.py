@@ -3,8 +3,6 @@
 import subprocess
 import time
 import logging
-from systemd.journal import JournalHandler
-from systemd import journal
 import os
 
 # 获取当前脚本的路径
