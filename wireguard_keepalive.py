@@ -26,7 +26,7 @@ def restart_wireguard():
 
 
 # 允许ping失败的次数
-allow_max_error_count = 3
+allow_max_error_count = 5
 down_count = 0
 # 上次是在线的
 is_last_up = False
@@ -54,4 +54,4 @@ while True:
         is_last_up = False
 
     # 每隔一段时间检测一次网络状态（秒）
-    time.sleep(3)
+    time.sleep(60)
