@@ -51,7 +51,7 @@ def check_network():
 
 def restart_wireguard():
     # 重新连接 WireGuard（请替换为你的命令）
-    subprocess.run(["sudo", "systemctl", "restart", "wg-quick@wg0"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["systemctl", "restart", "wg-quick@wg0"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log.info("WireGuard reconnected.")
 
 
