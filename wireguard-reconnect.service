@@ -1,0 +1,12 @@
+[Unit]
+Description=WireGuard Reconnect Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python /jdata/develop/WireguardKeepalive/wireguard_reconnect.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=default.target
+
