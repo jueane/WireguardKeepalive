@@ -31,7 +31,7 @@ file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(m
 file_handler.setFormatter(file_formatter)
 
 log.setLevel(logging.INFO)
-log.info("sent to journal")
+log.info("Wireguard Keepalive Running")
 
 
 def check_network():
@@ -56,7 +56,7 @@ def restart_wireguard():
 
 
 # 允许ping失败的次数
-allow_max_error_count = 5
+allow_max_error_count = 3
 down_count = 0
 # 上次是在线的
 is_last_up = False
@@ -77,6 +77,8 @@ while True:
         else:
             pass
 
+        log.info("Waiting", down_count)
+
         if down_count > allow_max_error_count:
             log.info("Ping failed ", down_count, " times. Reconnecting WireGuard...")
             restart_wireguard()
@@ -84,4 +86,4 @@ while True:
         is_last_up = False
 
     # 每隔一段时间检测一次网络状态（秒）
-    time.sleep(60)
+    time.sleep(10)
