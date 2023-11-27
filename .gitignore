@@ -1,4 +1,4 @@
 subprocess
 time
 .idea/
-
+*.log

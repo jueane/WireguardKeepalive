@@ -2,6 +2,36 @@
 
 import subprocess
 import time
+import logging
+from systemd.journal import JournalHandler
+from systemd import journal
+import os
+
+# 获取当前脚本的路径
+current_path = os.path.dirname(os.path.realpath(__file__))
+
+print(current_path)
+
+log_file = current_path + '/logfile.log'
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
+
+# 创建日志记录器
+log = logging.getLogger('demo')
+
+# 添加 FileHandler，指定输出到文件的路径
+file_handler = logging.FileHandler(log_file)
+log.addHandler(file_handler)
+
+file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(file_formatter)
+
+log.setLevel(logging.INFO)
+log.info("sent to journal")
 
 
 def check_network():
@@ -15,14 +45,14 @@ def check_network():
             return False
         else:
             # 其他错误，将其输出
-            print(f"Ping error: {output}")
+            log.info(f"Ping error: {output}")
             raise
 
 
 def restart_wireguard():
     # 重新连接 WireGuard（请替换为你的命令）
     subprocess.run(["sudo", "systemctl", "restart", "wg-quick@wg0"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    print("WireGuard reconnected.")
+    log.info("WireGuard reconnected.")
 
 
 # 允许ping失败的次数
@@ -37,18 +67,18 @@ while True:
         if is_last_up:
             pass
         else:
-            print("Network is up.")
+            log.info("Network is up.")
 
         is_last_up = True
     else:
         down_count += 1
         if down_count == 1:
-            print("Network is down.")
+            log.info("Network is down.")
         else:
             pass
 
         if down_count > allow_max_error_count:
-            print("Ping failed ", down_count, " times. Reconnecting WireGuard...")
+            log.info("Ping failed ", down_count, " times. Reconnecting WireGuard...")
             restart_wireguard()
 
         is_last_up = False

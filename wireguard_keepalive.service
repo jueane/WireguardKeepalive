@@ -1,11 +1,13 @@
 [Unit]
-Description=WireGuard Reconnect Service
+Description=WireGuard Keepalive Service
 After=network.target
 
 [Service]
 ExecStart=wireguard_keepalive
 Restart=always
 User=root
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=default.target
