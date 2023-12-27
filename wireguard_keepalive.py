@@ -44,7 +44,6 @@ def check_network():
         else:
             # 其他错误，将其输出
             log.info(f"Ping error: {output}")
-            raise
 
 
 def restart_wireguard():
