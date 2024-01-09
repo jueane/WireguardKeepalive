@@ -15,21 +15,21 @@ target_link_service = "/etc/systemd/system/wireguard_keepalive.service"
 # 创建软链接
 try:
     # 创建Python脚本软链接
+    if os.path.exists(target_link_py):
+        os.remove(target_link_py)  # 如果软链接已存在，先删除
     os.symlink(source_file_py, target_link_py)
     print(f"软链接成功创建：{target_link_py}")
 
-except FileExistsError:
-    print(f"{target_link_py}软链接已存在，无需创建。")
 except Exception as e:
     print(f"创建软链接时发生错误：{e}")
 
 # 创建软链接
 try:
     # 创建服务文件软链接
+    if os.path.exists(target_link_service):
+        os.remove(target_link_service)  # 如果软链接已存在，先删除
     os.symlink(source_file_service, target_link_service)
     print(f"软链接成功创建：{target_link_service}")
 
-except FileExistsError:
-    print(f"{target_link_service}软链接已存在，无需创建。")
 except Exception as e:
     print(f"创建软链接时发生错误：{e}")
