@@ -5,6 +5,9 @@ import time
 import logging
 import os
 
+import wireguard_file_parser
+from WGConfig import WgConfig
+
 # 获取当前脚本的路径
 current_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -53,18 +56,6 @@ def restart_wireguard(wg_name):
     log.info("WireGuard reconnected.")
 
 
-class WgConfig:
-    # 允许ping失败的次数
-    allow_max_error_count = 3
-
-    def __init__(self, wg_name, ip):
-        self.wg_name = wg_name
-        self.ip = ip
-        self.down_count = 0
-        # 上次是在线的
-        self.is_last_up = False
-
-
 def process_one(wg_inst):
     if check_network(wg_inst.ip):
         wg_inst.down_count = 0
@@ -91,13 +82,11 @@ def process_one(wg_inst):
         wg_inst.is_last_up = False
 
 
-wg_config_list = [
-    WgConfig("wg0", "10.1.1.1"),
-    WgConfig("wg1", "10.4.4.1")
-]
+wg_config_list = wireguard_file_parser.get_all_ips()
 
 while True:
     for wg in wg_config_list:
+        print(wg.ip, wg.wg_name)
         process_one(wg)
 
     # 每隔一段时间检测一次网络状态（秒）
