@@ -6,7 +6,7 @@ import os
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 # 源文件和目标路径
-source_file_py = os.path.join(current_path, "wireguard_keepalive.py")
+source_file_py = os.path.join(current_path, "startservice.sh")
 target_link_py = "/bin/wireguard_keepalive"
 
 source_file_service = os.path.join(current_path, "wireguard_keepalive.service")
