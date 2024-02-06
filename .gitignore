@@ -3,3 +3,5 @@ time
 .idea/
 *.log
 __pycache__*
+venv*
+
