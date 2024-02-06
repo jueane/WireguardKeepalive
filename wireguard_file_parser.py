@@ -5,6 +5,7 @@ import ipaddress
 
 import find_wireguard_config_files
 from WGConfig import WgConfig
+import platform
 
 
 def change_last_octet_to_1(ip_address):
@@ -43,12 +44,15 @@ wg_config_list = []
 
 
 def get_all_ips():
-    all_files = find_wireguard_config_files.find_all()
-    for wg_name, file_path in all_files.items():
-        # print('wg config: ', wg_config)
-        address_wg = get_subnet_first_ip(file_path)
-        print(f"{wg_name}: {address_wg}  {file_path}")
-        wg_config_list.append(WgConfig(file_path, wg_name, address_wg))
-    return wg_config_list
+    if platform.system() == 'Linux':
+        all_files = find_wireguard_config_files.find_all()
+        for wg_name, file_path in all_files.items():
+            # print('wg config: ', wg_config)
+            address_wg = get_subnet_first_ip(file_path)
+            print(f"{wg_name}: {address_wg}  {file_path}")
+            wg_config_list.append(WgConfig(file_path, wg_name, address_wg))
 
+    elif platform.system() == 'Windows':
+        wg_config_list.append(WgConfig('', 'h', '10.4.4.1'))
+    return wg_config_list
 # get_all_ips()

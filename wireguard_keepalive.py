@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
+from pythonping import ping
 import subprocess
 import time
 import logging
 import os
+import platform
 
 import wireguard_file_parser
 from WGConfig import WgConfig
@@ -13,7 +15,7 @@ current_path = os.path.dirname(os.path.realpath(__file__))
 
 print(current_path)
 
-log_file = current_path + '/logfile.log'
+log_file = os.path.join(current_path, 'logfile.log')
 
 # 配置日志
 logging.basicConfig(
@@ -37,23 +39,34 @@ log.info("Wireguard Keepalive Running")
 
 def check_network(ip):
     try:
-        subprocess.run(["ping", "-c", "1", ip], check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        return True
-    except subprocess.CalledProcessError as e:
-        # 获取 ping 命令的输出
-        output = e.output.decode('utf-8')
-        if "100% packet loss" in output:
-            return False
-        else:
-            # 其他错误，将其输出
-            log.info(f"Ping error: {output}")
+        response_list = ping(ip, count=1, timeout=1)
+        return response_list.success()
+    except Exception as e:
+        log.info(f"Ping error: {e}")
+        return False
 
 
-def restart_wireguard(wg_name):
-    # 重新连接 WireGuard（请替换为你的命令）
+def restart_wireguard_linux(wg_name):
     subprocess.run(["systemctl", "restart", f"wg-quick@{wg_name}"], check=True, stdout=subprocess.DEVNULL,
                    stderr=subprocess.DEVNULL)
     log.info("WireGuard reconnected.")
+
+
+def restart_wireguard_windows(wg_name):
+    subprocess.run(["wireguard", "/uninstalltunnelservice", "h"], check=False,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["wireguard", "/installtunnelservice", f"C:\Program Files\WireGuard\Data\Configurations\h.conf.dpapi"], check=False,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log.info("WireGuard reconnected.")
+
+
+def restart_wireguard(wg_name):
+    if platform.system() == 'Linux':
+        restart_wireguard_linux(wg_name)
+    elif platform.system() == 'Windows':
+        restart_wireguard_windows(wg_name)
+    else:
+        log.error("Unsupported operating system.")
 
 
 def process_one(wg_inst):
@@ -86,7 +99,6 @@ wg_config_list = wireguard_file_parser.get_all_ips()
 
 while True:
     for wg in wg_config_list:
-        print(wg.ip, wg.wg_name)
         process_one(wg)
 
     # 每隔一段时间检测一次网络状态（秒）
