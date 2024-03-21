@@ -107,4 +107,4 @@ while True:
         process_one(wg)
 
     # 每隔一段时间检测一次网络状态（秒）
-    time.sleep(10)
+    time.sleep(30)
