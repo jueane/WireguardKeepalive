@@ -59,7 +59,7 @@ def restart_wireguard_windows(wg_name):
     time.sleep(3)
 
     subprocess.run(
-        ["wireguard", "/installtunnelservice", f"C:\Program Files\WireGuard\Data\Configurations\h.conf.dpapi"],
+        ["wireguard", "/installtunnelservice", r"C:\Program Files\WireGuard\Data\Configurations\h.conf.dpapi"],
         check=False,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log.info("WireGuard reconnected.")
