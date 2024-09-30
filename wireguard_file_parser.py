@@ -4,6 +4,8 @@ import configparser
 import ipaddress
 
 import find_wireguard_config_files
+
+import parse_configs_from_cmd_arg
 from WGConfig import WgConfig
 import platform
 
@@ -53,6 +55,9 @@ def get_all_ips():
             wg_config_list.append(WgConfig(file_path, wg_name, address_wg))
 
     elif platform.system() == 'Windows':
-        wg_config_list.append(WgConfig('', 'h', '10.4.4.1'))
+        wg_list = parse_configs_from_cmd_arg.parse_arguments()
+        for k, v in wg_list.items():
+            print(k, v)
+            wg_config_list.append(WgConfig('', k, v))
+
     return wg_config_list
-# get_all_ips()
