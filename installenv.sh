@@ -4,8 +4,7 @@
 if [[ -f /etc/debian_version ]]; then
     # Debian/Ubuntu 系统
     echo "检测到 Debian/Ubuntu 系统，安装 python3-venv..."
-    sudo apt-get update
-    sudo apt-get install python3-venv -y
+    sudo apt install python3-venv -y
 elif [[ -f /etc/arch-release ]]; then
     # Arch Linux 系统
     echo "检测到 Arch Linux 系统，安装 python3-venv..."
