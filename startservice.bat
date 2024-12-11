@@ -6,4 +6,4 @@ set "script_dir=%~dp0"
 
 cd /d "%script_dir%"
 
-python wireguard_keepalive.py %*
+venv\Scripts\python.exe wireguard_keepalive.py %*
