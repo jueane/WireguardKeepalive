@@ -9,5 +9,5 @@ script_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 cd "$script_dir"
 
 
-venv/bin/python wireguard_keepalive.py "$@"
+venv/bin/python main.py "$@"
 
