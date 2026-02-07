@@ -1,3 +1,5 @@
-module WireguardWatchGo
+module wireguardwatchgo
 
-go 1.25.6
+go 1.21
+
+require gopkg.in/ini.v1 v1.67.0
