@@ -1,0 +1,14 @@
+[Unit]
+Description=WireGuard Watchdog Service
+After=network.target
+Requires=local-fs.target
+
+[Service]
+ExecStart=/usr/local/bin/wwg
+Restart=always
+User=root
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
