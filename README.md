@@ -1,6 +1,6 @@
 # WireguardWatchGo
 
-WireGuard 连接监控工具的 Go 语言实现版本。
+WireGuard 连接监控工具，网络不通时自动重启wireguard服务。支持windows和linux。
 
 ## 功能特性
 
@@ -40,3 +40,4 @@ wireguard-watchdog.exe h4=10.4.4.1 n7=10.7.7.1
 ```bash
 sudo ./wireguard-watchdog
 ```
+ 
