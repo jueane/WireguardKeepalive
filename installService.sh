@@ -3,6 +3,9 @@
 # 获取脚本所在目录的绝对路径
 script_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 
+echo "Building..."
+./build.sh
+
 echo "Installing Wireguard Watchdog from: $script_dir"
 
 # 安装 systemd 服务文件
