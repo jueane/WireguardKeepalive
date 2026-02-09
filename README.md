@@ -68,9 +68,8 @@ wireguard-watchdog.exe h4=10.4.4.1 n7=10.7.7.1
 - `h4=10.4.4.1` - 监控名为 `h4` 的 WireGuard 接口，ping 目标为 `10.4.4.1`
 - 可以同时监控多个接口，用空格分隔
 
-**安装为 Windows 服务（可选）：**
+**开机启动：在TaskScheduler中添加启动项（可选）：**
 ```bash
-# 使用 NSSM 或其他服务管理工具将程序安装为服务
 # 这样可以开机自动启动
 ```
 
@@ -219,10 +218,6 @@ go mod verify     # 验证依赖
 2026/02/09 12:00:23 - demo - INFO - WireGuard 已重新连接 (Windows)
 2026/02/09 12:00:28 - demo - INFO - 网络 h4 已恢复
 ```
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
 
 ## 📄 许可证
 
