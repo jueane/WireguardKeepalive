@@ -83,16 +83,49 @@ jobs:
         run: |
           go build -v -trimpath -ldflags="-s -w" -o ${{ matrix.output }}
 
-      - name: Generate SHA256 checksum
+      - name: Package Linux build with scripts
+        if: matrix.goos == 'linux'
         run: |
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            sha256sum ${{ matrix.output }} > ${{ matrix.output }}.sha256
-          else
-            sha256sum ${{ matrix.output }} > ${{ matrix.output }}.sha256
-          fi
+          # Create package directory
+          mkdir -p package
+
+          # Copy binary (rename to generic name)
+          cp ${{ matrix.output }} package/wireguard-watchdog
+
+          # Copy service management scripts
+          cp build.sh package/
+          cp installService.sh package/
+          cp status.sh package/
+          cp uninstallService.sh package/
+          cp wireguard-watchdog.service package/
+
+          # Set executable permissions
+          chmod +x package/*.sh package/wireguard-watchdog
+
+          # Create tar.gz archive
+          tar -czf ${{ matrix.output }}-${{ needs.release.outputs.version }}.tar.gz -C package .
+
+          # Generate SHA256 checksum for the archive
+          sha256sum ${{ matrix.output }}-${{ needs.release.outputs.version }}.tar.gz > ${{ matrix.output }}-${{ needs.release.outputs.version }}.tar.gz.sha256
         shell: bash
 
-      - name: Upload binary to release
+      - name: Generate SHA256 checksum for Windows
+        if: matrix.goos == 'windows'
+        run: |
+          sha256sum ${{ matrix.output }} > ${{ matrix.output }}.sha256
+        shell: bash
+
+      - name: Upload Linux package to release
+        if: matrix.goos == 'linux'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.release.outputs.version }}
+          files: |
+            ${{ matrix.output }}-${{ needs.release.outputs.version }}.tar.gz
+            ${{ matrix.output }}-${{ needs.release.outputs.version }}.tar.gz.sha256
+
+      - name: Upload Windows binary to release
+        if: matrix.goos == 'windows'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.release.outputs.version }}
