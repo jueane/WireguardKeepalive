@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 	"wireguardwatchgo/config"
@@ -14,8 +15,17 @@ import (
 )
 
 func main() {
+	// 获取可执行文件所在目录
+	exePath, err := os.Executable()
+	if err != nil {
+		fmt.Printf("获取程序路径失败: %v\n", err)
+		os.Exit(1)
+	}
+	exeDir := filepath.Dir(exePath)
+	logPath := filepath.Join(exeDir, types.LogFile)
+
 	// 初始化日志
-	if err := logger.Init(types.LogFile); err != nil {
+	if err := logger.Init(logPath); err != nil {
 		fmt.Printf("日志初始化失败: %v\n", err)
 		os.Exit(1)
 	}
