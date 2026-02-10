@@ -80,6 +80,37 @@ wireguard-watchdog.exe h4=10.4.4.1 n7=10.7.7.1
 - 配置文件位于 `/etc/wireguard/*.conf`
 - Root 权限
 
+#### 快速安装（推荐）
+
+使用一键安装脚本自动下载最新版本：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jueane/WireguardKeepalive/main/install-latest.sh | bash
+```
+
+或者下载脚本后执行：
+
+```bash
+wget https://raw.githubusercontent.com/jueane/WireguardKeepalive/main/install-latest.sh
+chmod +x install-latest.sh
+./install-latest.sh
+```
+
+脚本会自动：
+- 检测系统架构（amd64/arm64）
+- 下载最新版本的二进制文件
+- 验证 SHA256 校验和
+- 解压到 `/opt/wireguard-watchdog` 目录
+- 设置执行权限
+
+安装完成后，按照提示运行：
+
+```bash
+cd /opt/wireguard-watchdog && sudo ./installService.sh
+```
+
+#### 手动运行
+
 **运行：**
 ```bash
 sudo ./wireguard-watchdog
@@ -98,7 +129,7 @@ PrivateKey = ...
 ...
 ```
 
-**安装为 systemd 服务（推荐）：**
+#### 安装为 systemd 服务（推荐）
 ```bash
 # 创建服务文件
 sudo nano /etc/systemd/system/wireguard-watchdog.service
