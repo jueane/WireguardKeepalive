@@ -4,7 +4,7 @@ After=network.target
 Requires=local-fs.target
 
 [Service]
-ExecStart=/usr/local/bin/wwg
+ExecStart=/usr/local/bin/wireguard-watchdog
 Restart=always
 User=root
 StandardOutput=journal

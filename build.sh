@@ -1,1 +1,1 @@
-go build -o wwg
+go build -o wireguard-watchdog
