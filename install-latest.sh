@@ -53,7 +53,7 @@ check_dependencies() {
 
 # 获取最新 release 信息
 get_latest_release() {
-    echo -e "${YELLOW}Fetching latest release information...${NC}"
+    echo -e "${YELLOW}Fetching latest release information...${NC}" >&2
 
     local response=$(curl -s "$GITHUB_API")
 
