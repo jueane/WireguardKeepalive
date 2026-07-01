@@ -81,11 +81,10 @@ sudo ./uninstallService.sh
 
 ### 更新
 
-重新执行下载脚本后重启服务：
+重新执行下载脚本即可。若 `wireguard-watchdog` 服务正在运行，脚本会替换文件后自动重启服务。
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jueane/WireguardKeepalive/main/install-latest.sh | bash
-sudo systemctl restart wireguard-watchdog
 ```
 
 ## Windows

@@ -105,6 +105,32 @@ verify_checksum() {
     return 0
 }
 
+copy_package_files() {
+    local service_was_active=false
+
+    if command -v systemctl &> /dev/null && systemctl is-active --quiet wireguard-watchdog.service; then
+        service_was_active=true
+    fi
+
+    echo -e "${YELLOW}Copying files to $INSTALL_DIR${NC}"
+
+    for item in *; do
+        if [ "$item" = "wireguard-watchdog" ]; then
+            sudo install -m 755 "$item" "$INSTALL_DIR/.wireguard-watchdog.new"
+            sudo mv -f "$INSTALL_DIR/.wireguard-watchdog.new" "$INSTALL_DIR/wireguard-watchdog"
+        else
+            sudo cp -r "$item" "$INSTALL_DIR/"
+        fi
+    done
+
+    sudo chmod +x "$INSTALL_DIR"/*.sh "$INSTALL_DIR/wireguard-watchdog"
+
+    if [ "$service_was_active" = true ]; then
+        echo -e "${YELLOW}Restarting active wireguard-watchdog service...${NC}"
+        sudo systemctl restart wireguard-watchdog.service
+    fi
+}
+
 # 主函数
 main() {
     echo -e "${GREEN}=== WireGuard Watchdog Downloader ===${NC}"
@@ -161,12 +187,8 @@ main() {
     echo -e "${YELLOW}Creating installation directory: $INSTALL_DIR${NC}"
     sudo mkdir -p "$INSTALL_DIR"
 
-    # 复制文件到安装目录
-    echo -e "${YELLOW}Copying files to $INSTALL_DIR${NC}"
-    sudo cp -r * "$INSTALL_DIR/"
-
-    # 设置执行权限
-    sudo chmod +x "$INSTALL_DIR"/*.sh "$INSTALL_DIR/wireguard-watchdog"
+    # 复制文件到安装目录。二进制使用临时文件 + mv 替换，避免覆盖运行中的程序时报 Text file busy。
+    copy_package_files
 
     echo ""
     echo -e "${GREEN}=== Download and Extract Complete ===${NC}"
