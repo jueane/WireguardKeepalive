@@ -75,20 +75,20 @@ func processOne(wg *types.WgConfig) {
 		// Ping 成功
 		wg.DownCount = 0
 		if !wg.IsLastUp {
-			logger.Info(fmt.Sprintf("网络 %s 已恢复", wg.Name))
+			logger.Info(fmt.Sprintf("网络 %s (%s) 已恢复", wg.Name, wg.TargetIP))
 		}
 		wg.IsLastUp = true
 	} else {
 		// Ping 失败
 		wg.DownCount++
 		if wg.DownCount == 1 {
-			logger.Info(fmt.Sprintf("网络 %s 已断开", wg.Name))
+			logger.Info(fmt.Sprintf("网络 %s (%s) 已断开", wg.Name, wg.TargetIP))
 		}
 
-		logger.Info(fmt.Sprintf("网络 %s 等待中 %d", wg.Name, wg.DownCount))
+		logger.Info(fmt.Sprintf("网络 %s (%s) 等待中 %d", wg.Name, wg.TargetIP, wg.DownCount))
 
 		if wg.DownCount > types.AllowMaxErrorCount {
-			logger.Info(fmt.Sprintf("网络 %s Ping 失败 %d 次，正在重新连接...", wg.Name, wg.DownCount))
+			logger.Info(fmt.Sprintf("网络 %s (%s) Ping 失败 %d 次，正在重新连接...", wg.Name, wg.TargetIP, wg.DownCount))
 			service.RestartWireguard(wg.Name)
 		}
 
