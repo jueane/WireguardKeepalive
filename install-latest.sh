@@ -106,12 +106,6 @@ verify_checksum() {
 }
 
 copy_package_files() {
-    local service_was_active=false
-
-    if command -v systemctl &> /dev/null && systemctl is-active --quiet wireguard-watchdog.service; then
-        service_was_active=true
-    fi
-
     echo -e "${YELLOW}Copying files to $INSTALL_DIR${NC}"
 
     for item in *; do
@@ -124,10 +118,39 @@ copy_package_files() {
     done
 
     sudo chmod +x "$INSTALL_DIR"/*.sh "$INSTALL_DIR/wireguard-watchdog"
+}
+
+install_service() {
+    local service_was_active=false
+    local main_pid_before=""
+    local main_pid_after=""
+
+    if command -v systemctl &> /dev/null && systemctl is-active --quiet wireguard-watchdog.service; then
+        service_was_active=true
+        main_pid_before=$(systemctl show -p MainPID --value wireguard-watchdog.service 2>/dev/null || true)
+    fi
+
+    echo -e "${YELLOW}Installing and starting wireguard-watchdog service...${NC}"
+    cd "$INSTALL_DIR" && sudo ./installService.sh
+
+    if ! command -v systemctl &> /dev/null; then
+        return
+    fi
+
+    if ! systemctl is-enabled --quiet wireguard-watchdog.service; then
+        echo -e "${YELLOW}Enabling wireguard-watchdog service...${NC}"
+        sudo systemctl enable wireguard-watchdog.service
+    fi
 
     if [ "$service_was_active" = true ]; then
-        echo -e "${YELLOW}Restarting active wireguard-watchdog service...${NC}"
-        sudo systemctl restart wireguard-watchdog.service
+        main_pid_after=$(systemctl show -p MainPID --value wireguard-watchdog.service 2>/dev/null || true)
+        if [ -z "$main_pid_after" ] || [ "$main_pid_after" = "$main_pid_before" ]; then
+            echo -e "${YELLOW}Restarting active wireguard-watchdog service...${NC}"
+            sudo systemctl restart wireguard-watchdog.service
+        fi
+    elif ! systemctl is-active --quiet wireguard-watchdog.service; then
+        echo -e "${YELLOW}Starting wireguard-watchdog service...${NC}"
+        sudo systemctl start wireguard-watchdog.service
     fi
 }
 
@@ -190,28 +213,27 @@ main() {
     # 复制文件到安装目录。二进制使用临时文件 + mv 替换，避免覆盖运行中的程序时报 Text file busy。
     copy_package_files
 
+    # 安装 systemd 服务，并按当前状态启动或重启。
+    install_service
+
     echo ""
-    echo -e "${GREEN}=== Download and Extract Complete ===${NC}"
+    echo -e "${GREEN}=== Install Complete ===${NC}"
     echo -e "${GREEN}Version: $version${NC}"
     echo -e "${GREEN}Architecture: $arch${NC}"
     echo -e "${GREEN}Installation directory: $INSTALL_DIR${NC}"
     echo ""
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}Next Steps:${NC}"
+    echo -e "${YELLOW}Common commands:${NC}"
     echo ""
-    echo -e "${YELLOW}1. Install and start the service:${NC}"
-    echo -e "   ${GREEN}cd $INSTALL_DIR && sudo ./installService.sh${NC}"
-    echo ""
-    echo -e "${YELLOW}2. Or manually control the service:${NC}"
     echo -e "   ${GREEN}sudo systemctl start wireguard-watchdog${NC}    # Start service"
     echo -e "   ${GREEN}sudo systemctl stop wireguard-watchdog${NC}     # Stop service"
     echo -e "   ${GREEN}sudo systemctl status wireguard-watchdog${NC}   # Check status"
     echo -e "   ${GREEN}sudo systemctl enable wireguard-watchdog${NC}   # Enable auto-start"
     echo ""
-    echo -e "${YELLOW}3. View logs:${NC}"
+    echo -e "${YELLOW}View logs:${NC}"
     echo -e "   ${GREEN}sudo journalctl -u wireguard-watchdog -f${NC}"
     echo ""
-    echo -e "${YELLOW}4. Uninstall service:${NC}"
+    echo -e "${YELLOW}Uninstall service:${NC}"
     echo -e "   ${GREEN}cd $INSTALL_DIR && sudo ./uninstallService.sh${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }

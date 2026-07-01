@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # 获取脚本所在目录的绝对路径
 script_dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 
@@ -30,13 +32,20 @@ ln -sf "$script_dir/wireguard-watchdog" /usr/local/bin/wireguard-watchdog
 echo "Reloading systemd daemon..."
 systemctl daemon-reload
 
-# 启用服务（开机自启）
-echo "Enabling service..."
-systemctl enable wireguard-watchdog.service
+if systemctl is-enabled --quiet wireguard-watchdog.service; then
+    echo "Service already enabled."
+else
+    echo "Enabling service..."
+    systemctl enable wireguard-watchdog.service
+fi
 
-# 启动服务
-echo "Starting service..."
-systemctl start wireguard-watchdog.service
+if systemctl is-active --quiet wireguard-watchdog.service; then
+    echo "Restarting service..."
+    systemctl restart wireguard-watchdog.service
+else
+    echo "Starting service..."
+    systemctl start wireguard-watchdog.service
+fi
 
 echo "Installation complete!"
 echo "Service status: systemctl status wireguard-watchdog"
