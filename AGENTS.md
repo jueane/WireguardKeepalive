@@ -6,6 +6,12 @@
 
 WireguardWatchGo 是一个 WireGuard VPN 连接监控工具，使用 Go 语言编写，支持 Windows 和 Linux 平台。当网络不通时自动重启 WireGuard 服务，具有低内存占用、详细日志记录等特点。
 
+## 操作环境
+
+- 默认通过 `ssh root@10.0.0.2` 在宿主机 `/jdata/develop/WireguardKeepalive` 操作本项目。
+- 除非用户明确要求，不通过 Windows 的 `J:\develop\WireguardKeepalive` 共享路径修改文件。
+- 原因是该项目主要在 Linux 上构建、安装和发布；通过 SMB/Windows 路径操作容易引入文件权限位、换行和共享卡顿问题。
+
 ## 构建命令
 
 ### 依赖安装

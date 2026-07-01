@@ -16,8 +16,17 @@ require_cmd() {
 require_cmd curl
 require_cmd git
 
-if ! git diff --quiet || ! git diff --cached --quiet; then
-    echo "Error: working tree is not clean. Commit or stash changes before releasing." >&2
+upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+if [ -z "$upstream" ]; then
+    echo "Error: current branch has no upstream. Push the branch or set upstream before releasing." >&2
+    exit 1
+fi
+
+git fetch --tags origin
+
+unpushed_count="$(git rev-list --count "${upstream}..HEAD")"
+if [ "$unpushed_count" -ne 0 ]; then
+    echo "Error: local HEAD has $unpushed_count unpushed commit(s). Push them before releasing." >&2
     exit 1
 fi
 
@@ -47,8 +56,6 @@ next_version="v${major}.${minor}.$((patch + 1))"
 
 echo "Latest release: $latest_version"
 echo "Next release:   $next_version"
-
-git fetch --tags origin
 
 if git rev-parse -q --verify "refs/tags/${next_version}" >/dev/null; then
     echo "Error: tag already exists locally: $next_version" >&2
