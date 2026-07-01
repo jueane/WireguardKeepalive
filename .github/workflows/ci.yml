@@ -45,7 +45,13 @@ jobs:
     needs: quality
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            output: wireguard-watchdog
+            artifact_name: wireguard-watchdog-linux-amd64
+          - os: windows-latest
+            output: wireguard-watchdog.exe
+            artifact_name: wireguard-watchdog-windows-amd64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -58,11 +64,11 @@ jobs:
           cache: true
 
       - name: Build
-        run: go build -v -o wireguard-watchdog${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+        run: go build -v -o ${{ matrix.output }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wireguard-watchdog-${{ matrix.os }}
-          path: wireguard-watchdog${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.output }}
           retention-days: 1
